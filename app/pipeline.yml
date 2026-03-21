@@ -1,0 +1,72 @@
+name: expense app workflow
+on:
+  push:
+    branch:
+      - main
+  #workflow_dispatch:
+    #inputs:
+      #select-runner:
+        #description: 'Select runner where want to run jobs'
+        #required: true
+        #default: 'workStation01'
+        #type: choice
+        #options:
+          #- workStation01
+          #- worker01
+defaults:
+  run:
+    shell: bash
+jobs:
+  compile:
+    runs-on: ${{ github.event.inputs.select-runner || 'workStation01'}}
+    steps:
+      - name: compile code
+        run: echo 'code is compiled'
+  create_workStation:
+    runs-on: ${{ github.event.inputs.select-runner  || 'workStation01' }}
+    steps:
+      - name: checkout git repository
+        uses: actions/checkout@v4
+      - name: create infrastructure
+        runs: bash ./terraform_code/create.sh
+  code_quality:
+    runs-on: ${{ github.event.inputs.select-runner || 'workStation01'}}
+    steps:
+      - name: checkout git repository
+        uses: actions/checkout@v4
+      - name: send backend code to sonarqube
+        runs: echo 'backend code sent to sonarqube'
+      - name: send frontend code to sonarqube
+        runs: echo 'frontend code sent to sonarqube'
+  unit_testing:
+    runs-on: ${{ github.event.inputs.select-runner || 'workStation01'}}
+    steps:
+      - name: checkout git repo
+        uses: actions/checkout@v4
+      - name: run unit test
+        uses: echo 'unit test run'
+  build_version:
+    runs-on: ${{ github.event.inputs.select-runner || 'workStation01'}}
+    steps:
+      - name: checkout git repo
+        uses: actions/checkout@v4
+      - name: create backend docker image
+        runs: 'docker build -t ......'
+      - name: create frontend docker image
+        runs: echo 'docker build -t ....'
+  upload_image_registory:
+    runs-on: ${{ github.event.inputs.select-runner || 'workStation01'}}
+    steps:
+      - name: checkout git repo
+        uses: actions/checkout@v4
+      - name: push backend image on docker hub
+        runs: echo 'docker push ....'
+      - name: push frontend image on docker hub
+        runs: echo 'docker push ..'
+  deploy:
+  runs-on: ${{ github.event.inputs.select-runner || 'workStation01'}}
+  steps:
+    - name: checkout git repo
+      uses: actions/checkout@v4
+    - name: deploy backend and frontend using script
+      runs: echo 'deploy.sh'
