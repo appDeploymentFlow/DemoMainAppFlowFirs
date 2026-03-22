@@ -18,19 +18,19 @@ defaults:
     shell: bash
 jobs:
   compile:
-    runs-on: ${{ github.event.inputs.select-runner || 'workStation01'}}
+    runs-on: ${{ github.event.inputs.select-runner || 'worker01'}}
     steps:
       - name: compile code
         run: echo 'code is compiled'
   create_workStation:
-    runs-on: ${{ github.event.inputs.select-runner  || 'workStation01' }}
+    runs-on: ${{ github.event.inputs.select-runner  || 'worker01' }}
     steps:
       - name: checkout git repository
         uses: actions/checkout@v4
       - name: create infrastructure
         runs: bash ./terraform_code/create.sh
   code_quality:
-    runs-on: ${{ github.event.inputs.select-runner || 'workStation01'}}
+    runs-on: ${{ github.event.inputs.select-runner || 'worker01'}}
     steps:
       - name: checkout git repository
         uses: actions/checkout@v4
@@ -39,14 +39,14 @@ jobs:
       - name: send frontend code to sonarqube
         runs: echo 'frontend code sent to sonarqube'
   unit_testing:
-    runs-on: ${{ github.event.inputs.select-runner || 'workStation01'}}
+    runs-on: ${{ github.event.inputs.select-runner || 'worker01'}}
     steps:
       - name: checkout git repo
         uses: actions/checkout@v4
       - name: run unit test
         uses: echo 'unit test run'
   build_version:
-    runs-on: ${{ github.event.inputs.select-runner || 'workStation01'}}
+    runs-on: ${{ github.event.inputs.select-runner || 'worker01'}}
     steps:
       - name: checkout git repo
         uses: actions/checkout@v4
@@ -55,7 +55,7 @@ jobs:
       - name: create frontend docker image
         runs: echo 'docker build -t ....'
   upload_image_registory:
-    runs-on: ${{ github.event.inputs.select-runner || 'workStation01'}}
+    runs-on: ${{ github.event.inputs.select-runner || 'worker01'}}
     steps:
       - name: checkout git repo
         uses: actions/checkout@v4
@@ -64,7 +64,7 @@ jobs:
       - name: push frontend image on docker hub
         runs: echo 'docker push ..'
   deploy:
-  runs-on: ${{ github.event.inputs.select-runner || 'workStation01'}}
+  runs-on: ${{ github.event.inputs.select-runner || 'worker01'}}
   steps:
     - name: checkout git repo
       uses: actions/checkout@v4

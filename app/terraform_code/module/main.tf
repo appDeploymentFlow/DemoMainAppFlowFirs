@@ -22,4 +22,5 @@ resource "aws_instance" "main" {
   tags = {
     Name = "workStation01"
   }
+  user_data_base64 = filebase64("./user.sh")
 }

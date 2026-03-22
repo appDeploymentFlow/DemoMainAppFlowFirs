@@ -1,0 +1,23 @@
+name: make deployment to expense app using docker containers
+on:
+  push:
+    branch:
+      - main
+defaults:
+  run:
+    shell: bash
+jobs:
+  compile:
+    runs-on: ['workStation01']
+    steps:
+      - name: checkout git repo
+        uses: actions/checkout@v4
+      - name: compile code
+        runs: echo 'code is compiled'
+  create_infra:
+    runs-on: ['workStation01']
+    steps:
+      - name: checkout git repo
+        uses: actions/checkout@v4
+      - name: creating worker01 for deployment
+        runs: bash terraform_code/create.sh
