@@ -6,3 +6,4 @@ module "server" {
   ami = var.ami
   region = var.region
 }
+# https://github.com/terraform-aws-modules/terraform-aws-ec2-instance?tab=readme-ov-file
