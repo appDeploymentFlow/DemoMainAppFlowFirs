@@ -20,4 +20,4 @@ jobs:
       - name: checkout git repo
         uses: actions/checkout@v4
       - name: creating worker01 for deployment
-        run: bash terraform_code/create.sh
+        run: bash app/terraform_code/create.sh
