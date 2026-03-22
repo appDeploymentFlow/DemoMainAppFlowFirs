@@ -25,7 +25,7 @@ jobs:
         run: touch /home/ubuntu/test01
   create_infra_init:
     runs-on: ['workStation01']
-    needs: [compile,create_file]
+    needs: ['compile','create_file']
     steps:
       - name: checkout git repo
         uses: actions/checkout@v4
@@ -33,14 +33,7 @@ jobs:
         run: |
           terraform -chdir=app/terraform_code fmt --recursive
           terraform -chdir=app/terraform_code init
-  create_infra_plan:
-    runs-on: ['workStation01']
-    needs: create_infra_init
-    steps:
-      - name: checkout git repo
-        uses: actions/checkout@v4
-      - name: plan to terra
-        run: terraform -chdir=app/terraform_code plan
+          terraform -chdir=app/terraform_code plan
   # create_infra:
   #   runs-on: ['workStation01']
   #   needs: compile
