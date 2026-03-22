@@ -1,0 +1,5 @@
+- name: install required package and configuration
+  become: true
+  hosts: localhost
+  roles:
+    - kubernetes
