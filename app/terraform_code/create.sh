@@ -1,5 +1,6 @@
 terraform fmt --recursive
 # #terraform init -backend-config=state.tfvars
+pwd
 terraform init
 # sleep 5s
 # terraform plan
