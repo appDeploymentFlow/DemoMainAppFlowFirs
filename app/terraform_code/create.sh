@@ -1,12 +1,7 @@
+cd app/terraform_code
 terraform fmt --recursive
 # #terraform init -backend-config=state.tfvars
-pwd
 terraform init
+terraform plan
 # sleep 5s
-# terraform plan
-# sleep 5s
-# terraform apply --auto-approve
-# touch /home/ubuntu/test02
-# pwd
-# whoami
-# terraform --version
+terraform apply --auto-approve
