@@ -19,7 +19,7 @@ resource "aws_internet_gateway" "ig" {
 
 resource "aws_route_table" "route_table" {
   vpc_id = aws_vpc.vpc_main.id
-  route = {
+  route {
     cidr_block = aws_vpc.vpc_main.cidr_block
     gateway_id = "local"
   }
