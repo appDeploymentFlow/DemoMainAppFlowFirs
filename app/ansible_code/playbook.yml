@@ -2,4 +2,6 @@
   become: true
   hosts: localhost
   roles:
-    - kubernetes
+    - role: "{{COMPONENT}}"
+
+#use ansible-pull -U git-url -e COMPONENT=${kubernetes} app/ansible_code/playbook.yml
