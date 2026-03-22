@@ -10,3 +10,6 @@ provider "aws" {
 #     dynamodb_table = "terraform-locks"  # Optional for locking
 #   }
 # }   
+terraform {
+  backend "s3" {}
+}
