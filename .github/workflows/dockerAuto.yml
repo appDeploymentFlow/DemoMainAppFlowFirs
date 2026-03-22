@@ -14,31 +14,31 @@ jobs:
         uses: actions/checkout@v4
       - name: compile code
         run: echo 'code is compiled'
-  create_file:
-    runs-on: ['workStation01']
-    steps:
-      - name: know pwd and user
-        run: |
-          whoami
-          pwd
-      - name: create test01 file
-        run: touch /home/ubuntu/test01
-  create_infra_init:
-    runs-on: ['workStation01']
-    needs: ['compile','create_file']
-    steps:
-      - name: checkout git repo
-        uses: actions/checkout@v4
-      - name: init the terraform
-        run: |
-          terraform -chdir=app/terraform_code fmt --recursive
-          terraform -chdir=app/terraform_code init
-          terraform -chdir=app/terraform_code plan
-  # create_infra:
+  # create_file:
   #   runs-on: ['workStation01']
-  #   needs: compile
+  #   steps:
+  #     - name: know pwd and user
+  #       run: |
+  #         whoami
+  #         pwd
+  #     - name: create test01 file
+  #       run: touch /home/ubuntu/test01
+  # create_infra_init:
+  #   runs-on: ['workStation01']
+  #   needs: ['compile','create_file']
   #   steps:
   #     - name: checkout git repo
   #       uses: actions/checkout@v4
-  #     - name: creating worker01 for deployment
-  #       run: bash app/terraform_code/create.sh
+  #     - name: init the terraform
+  #       run: |
+  #         terraform -chdir=app/terraform_code fmt --recursive
+  #         terraform -chdir=app/terraform_code init
+  #         terraform -chdir=app/terraform_code plan
+  create_infra:
+    runs-on: ['workStation01']
+    needs: ['compile']
+    steps:
+      - name: checkout git repo
+        uses: actions/checkout@v4
+      - name: creating worker01 for deployment
+        run: bash app/terraform_code/create.sh
