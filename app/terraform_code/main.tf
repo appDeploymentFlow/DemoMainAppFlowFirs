@@ -3,6 +3,7 @@ module "server" {
   source = "./module"
 
   instance_type = each.value.instance_type
+  name = each.key
   ami = var.ami
   region = var.region
 }

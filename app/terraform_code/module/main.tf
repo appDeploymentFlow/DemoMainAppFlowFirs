@@ -20,7 +20,7 @@ resource "aws_instance" "main" {
   #   }
   # }
   tags = {
-    Name = "workStation01"
+    Name = var.name
   }
   user_data_base64 = filebase64("./user.sh")
 }
