@@ -17,3 +17,20 @@ done
 # sudo apt update
 # sudo apt-get install terraform ansible git -y
 sudo apt update && sudo apt install -y ansible
+##change deafult user ubuntu password to login with password
+sudo echo 'ubuntu:rootme@123'|sudo chpasswd
+##enable password authentication so that instance can accept password
+sudo sed -i 's/^#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
+##disable public key authentication so that while login it match password not public key
+sudo sed -i 's/^#PubkeyAuthentication yes/PubkeyAuthentication no/' /etc/ssh/sshd_config
+##Change to yes to enable challenge-response passwords
+sudo sed -i 's/^KbdInteractiveAuthentication no/KbdInteractiveAuthentication yes/' /etc/ssh/sshd_config
+sudo systemctl restart ssh
+
+##add virtual memory
+sudo fallocate -l 7G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+echo '/swapfile none swap sw 0 0'| sudo tee -a /etc/fstab
+sudo sysctl vm.swappiness=10

@@ -12,7 +12,8 @@ jobs:
     runs-on: ['workStation01']
     steps:
       - name: checkout git repo code
-        uses: actions/checkout@v4
+        #uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: compile code
         run: echo 'code is compiled'
   create_infra:
@@ -20,12 +21,13 @@ jobs:
     needs: ['compile']
     steps:
       - name: checkout git repo code
-        uses: actions/checkout@v4
+        #uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: setup terraform
         uses: hashicorp/setup-terraform@v3
       - name: creating worker01 server for deployment
-        #run: bash app/terraform_code/create.sh
-        run: echo 'infra is already created'
+        run: bash app/terraform_code/create.sh
+        #run: echo 'infra is already created'
   configure_packages:
     runs-on: ['workStation01']
     needs: ['create_infra']
@@ -37,9 +39,10 @@ jobs:
       #   uses: actions/setup-python@v5
       #   with:
       #     python-version: '3.12.3'
-      - name: get secretes
+      - name: configure source code
         env:
           access_token: ${{ secrets.REPO_ACCESS_TOKEN }}
           user_name: ${{ secrets.REPO_USER_NAME }}
-          my_name: ${{ vars.MY_NAME }}
-        run: bash app/ansible_code/init.sh "$user_name" "$my_name"
+          #my_name: ${{ vars.MY_NAME }}
+          worker01_ssh_pass: ${{ WORKER01_SSH_PASS }}
+        run: bash app/ansible_code/init.sh "$user_name" "$access_token" kubernetes "$worker01_ssh_pass"
