@@ -30,6 +30,7 @@ jobs:
         run: echo 'infra is already created'
   configure_packages:
     runs-on: ['workStation01']
+    environment: USER_NAME
     needs: ['create_infra']
     steps:
       - name: checkout git repo code
