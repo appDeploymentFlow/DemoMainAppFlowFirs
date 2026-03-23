@@ -45,4 +45,4 @@ jobs:
           ACCESS_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
           USER: ${{ secrets.REPO_USER_NAME }}
           SSH_PASS: ${{ secrets.WORKER01_SSH_PASS }}
-        run: bash app/ansible_code/init.sh $USER $ACCESS_TOKEN kubernetes
+        run: bash app/ansible_code/init.sh $USER $ACCESS_TOKEN kubernetes $SSH_PASS
