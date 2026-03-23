@@ -109,14 +109,27 @@
     state: present
     update_cache: yes
 
+# - name: configure and enabled containerd
+#   ansible.builtin.command:
+#     cmd: |
+#       sudo mkdir -p /etc/containerd
+#       containerd config default |sudo tee /etc/containerd/config.toml
+#       set -i 's/SystemdCgroup=false/SystemdCgroup=true/' >> /etc/containerd/config.toml
+#       sudo systemctl restart containerd
+#       sudo systemctl enable containerd
+
 - name: configure and enabled containerd
   ansible.builtin.command:
-    cmd: |
-      sudo mkdir -p /etc/containerd
-      containerd config default |sudo tee /etc/containerd/config.toml
-      set -i 's/SystemdCgroup=false/SystemdCgroup=true/' >> /etc/containerd/config.toml
-      sudo systemctl restart containerd
-      sudo systemctl enable containerd
+    argv:
+      - containerd config default |sudo tee /etc/containerd/config.toml
+      - set -i 's/SystemdCgroup=false/SystemdCgroup=true/' >> /etc/containerd/config.toml
+    creates: /etc/containerd
+
+- name: start and enabled containerd
+  ansible.builtin.systemd_service:
+    name: containerd
+    state: started
+    enabled: true
 
 - name: install pre-request packages
   ansible.builtin.apt:
