@@ -25,7 +25,9 @@ sudo sed -i 's/^#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ss
 sudo sed -i 's/^#PubkeyAuthentication yes/PubkeyAuthentication no/' /etc/ssh/sshd_config
 ##Change to yes to enable challenge-response passwords
 sudo sed -i 's/^KbdInteractiveAuthentication no/KbdInteractiveAuthentication yes/' /etc/ssh/sshd_config
-sudo systemctl restart ssh
+#sudo systemctl restart ssh
+systemctl daemon-reload
+systemctl restart ssh.socket
 
 ##add virtual memory
 sudo fallocate -l 7G /swapfile
