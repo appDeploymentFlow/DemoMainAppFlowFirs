@@ -2,8 +2,8 @@ name: make deployment to expense app using docker containers
 on:
   push:
     branches: ["main"]
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+# env:
+#   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 defaults:
   run:
     shell: bash
