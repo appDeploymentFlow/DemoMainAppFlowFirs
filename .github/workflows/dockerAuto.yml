@@ -1,8 +1,7 @@
 name: make deployment to expense app using docker containers
 on:
   push:
-    branch:
-      - main
+    branches: ["main"]
 defaults:
   run:
     shell: bash
@@ -10,35 +9,30 @@ jobs:
   compile:
     runs-on: ['workStation01']
     steps:
-      - name: checkout git repo
+      - name: checkout git repo code
         uses: actions/checkout@v4
       - name: compile code
         run: echo 'code is compiled'
-  # create_file:
-  #   runs-on: ['workStation01']
-  #   steps:
-  #     - name: know pwd and user
-  #       run: |
-  #         whoami
-  #         pwd
-  #     - name: create test01 file
-  #       run: touch /home/ubuntu/test01
-  # create_infra_init:
-  #   runs-on: ['workStation01']
-  #   needs: ['compile','create_file']
-  #   steps:
-  #     - name: checkout git repo
-  #       uses: actions/checkout@v4
-  #     - name: init the terraform
-  #       run: |
-  #         terraform -chdir=app/terraform_code fmt --recursive
-  #         terraform -chdir=app/terraform_code init
-  #         terraform -chdir=app/terraform_code plan
   create_infra:
     runs-on: ['workStation01']
     needs: ['compile']
     steps:
-      - name: checkout git repo
+      - name: checkout git repo code
         uses: actions/checkout@v4
-      - name: creating worker01 for deployment
-        run: bash app/terraform_code/create.sh
+      - name: setup terraform
+        uses: hashicorp/setup-terraform@v3
+      - name: creating worker01 server for deployment
+        #run: bash app/terraform_code/create.sh
+        run: echo 'infra is already created'
+  configure_packages:
+    runs-on: ['workStation01']
+    needs: ['create_infra']
+    steps:
+      - name: checkout git repo code
+        uses: actions/checkout@v4
+      - name: setup python
+        uses: actions/setup-python@v5
+      - name: get secretes
+        env:
+          access_token: ${{ REPO_ACCESS_TOKEN }}
+        run: bash app/ansible_code/init.sh "$access_token"
