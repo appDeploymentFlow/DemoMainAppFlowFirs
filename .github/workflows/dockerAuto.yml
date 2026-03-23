@@ -30,7 +30,7 @@ jobs:
         run: echo 'infra is already created'
   configure_packages:
     runs-on: ['workStation01']
-    environment: USER_NAME
+    #environment: USER_NAME
     needs: ['create_infra']
     steps:
       - name: checkout git repo code
@@ -42,8 +42,7 @@ jobs:
       #     python-version: '3.12.3'
       - name: configure source code
         env:
-          access_token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          user_name: ${{ secrets.REPO_USER_NAME }}
-          #my_name: ${{ vars.MY_NAME }}
-          worker01_ssh_pass: ${{ secrets.WORKER01_SSH_PASS }}
-        run: bash app/ansible_code/init.sh "$user_name" "$access_token" kubernetes "$worker01_ssh_pass"
+          ACCESS_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
+          USER: ${{ secrets.REPO_USER_NAME }}
+          SSH_PASS: ${{ secrets.WORKER01_SSH_PASS }}
+        run: bash app/ansible_code/init.sh $USER $ACCESS_TOKEN kubernetes
