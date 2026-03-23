@@ -13,8 +13,5 @@
 #get worker01 public ip
 worker01=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=worker01" --query "Reservations[].Instances[].PublicIpAddress" --output text)
 sshpass -p "${4}" ssh -o StrictHostKeyChecking=no ubuntu@$worker01 << 'EOF'
-# ansible-pull -U https://${1}:${2}@github.com/appDeploymentFlow/DemoMainAppFlowFirs.git -d /tmp/ansible_pull_cache -i localhost, -e "COMPONENT=${3}" app/ansible_code/playbook.yml
-touch /home/ubuntu/text.txt
-echo ${1} >> /home/ubuntu/text.txt
-echo ${2} >> /home/ubuntu/text.txt
+ansible-pull -U https://${1}:${2}@github.com/appDeploymentFlow/DemoMainAppFlowFirs.git -d /tmp/ansible_pull_cache -i localhost, -e "COMPONENT=${3}" app/ansible_code/playbook.yml
 EOF
