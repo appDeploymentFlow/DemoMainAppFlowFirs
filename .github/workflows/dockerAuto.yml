@@ -23,8 +23,8 @@ jobs:
       - name: checkout git repo code
         #uses: actions/checkout@v4
         uses: actions/checkout@v5
-      - name: setup terraform
-        uses: hashicorp/setup-terraform@v3
+      # - name: setup terraform
+      #   uses: hashicorp/setup-terraform@v3
       - name: creating worker01 server for deployment
         run: bash app/terraform_code/create.sh
         #run: echo 'infra is already created'
