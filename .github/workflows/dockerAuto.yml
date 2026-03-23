@@ -44,5 +44,5 @@ jobs:
           access_token: ${{ secrets.REPO_ACCESS_TOKEN }}
           user_name: ${{ secrets.REPO_USER_NAME }}
           #my_name: ${{ vars.MY_NAME }}
-          worker01_ssh_pass: ${{ WORKER01_SSH_PASS }}
+          worker01_ssh_pass: ${{ secrets.WORKER01_SSH_PASS }}
         run: bash app/ansible_code/init.sh "$user_name" "$access_token" kubernetes "$worker01_ssh_pass"
