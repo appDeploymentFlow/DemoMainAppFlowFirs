@@ -40,7 +40,7 @@ jobs:
           cd app/terraform_code
           terraform init
           terraform plan
-          terraform -auto-approve
+          terraform apply -auto-approve
         #run: echo 'infra is already created'
   # wait_time:
   #   runs-on: ['workStation01']
