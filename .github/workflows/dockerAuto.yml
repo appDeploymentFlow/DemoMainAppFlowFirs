@@ -2,8 +2,6 @@ name: make deployment to expense app using docker containers
 on:
   push:
     branches: ["main"]
-# env:
-#   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 defaults:
   run:
     shell: bash
@@ -12,7 +10,6 @@ jobs:
     runs-on: ['workStation01']
     steps:
       - name: checkout git repo code
-        #uses: actions/checkout@v4
         uses: actions/checkout@v5
       - name: compile code
         run: echo 'code is compiled'
@@ -21,21 +18,18 @@ jobs:
     needs: ['compile']
     steps:
       - name: checkout git repo code
-        #uses: actions/checkout@v4
         uses: actions/checkout@v5
-      # - name: setup terraform
-      #   uses: hashicorp/setup-terraform@v3
       - name: creating worker01 server for deployment
         # env:
         #   ACCESS_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
         #   USER: ${{ secrets.REPO_USER_NAME }}
         #   SSH_PASS: ${{ secrets.WORKER01_SSH_PASS }}
-        env:
+        #run: bash app/terraform_code/create.sh $SSH_PASS $USER $ACCESS_TOKEN kubernetes
+        env:              #define variable with "TF_VAR_var-name-define-file" can be taken automatically by terraform
           TF_VAR_access_git: ${{ secrets.REPO_ACCESS_TOKEN }}
           TF_VAR_user_git: ${{ secrets.REPO_USER_NAME }}
           TF_VAR_ssh_pass: ${{ secrets.WORKER01_SSH_PASS }}
-          TF_VAR_ansible_role: "kubernetes"
-        #run: bash app/terraform_code/create.sh $SSH_PASS $USER $ACCESS_TOKEN kubernetes
+          TF_VAR_ansible_role: "docker"
         run: |
           cd app/terraform_code
           terraform init
