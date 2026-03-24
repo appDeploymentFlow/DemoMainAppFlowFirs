@@ -24,3 +24,23 @@ resource "aws_instance" "main" {
   }
   user_data_base64 = filebase64("./user.sh")
 }
+
+resource "null_resource" "install_packages" {
+  depends_on = [ aws_instance.main ]
+  # Trigger re-running when the instance ID changes
+  triggers = {
+    instance_id = aws_instance.main.id
+  }
+  connection { # Enables connection to the remote host
+    host     = aws_instance.main.public_ip
+    user     = "ubuntu"
+    password = var.ssh_pass
+    type     = "ssh"
+  }
+  # Execute a local command
+  provisioner "remote-exec" {
+    inline = [ 
+      "ansible-pull -U https://${var.user_git}:${var.access_git}@github.com/appDeploymentFlow/DemoMainAppFlowFirs.git -d /tmp/ansible_pull_cache -i localhost, -e COMPONENT=${var.ansible_role} app/ansible_code/playbook.yml"
+     ]
+  }
+}

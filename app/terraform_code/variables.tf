@@ -20,3 +20,19 @@ variable "ami" {
 variable "region" {
   default = "us-east-1a"
 }
+# variable "ssh_pass" {
+#   default = "rootme@123"
+# }
+variable "ssh_pass" {}
+# variable "user_git" {
+#   default = "vikaskumars1997"
+# }
+variable "user_git" {}
+# variable "access_git" {
+#   default = "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"
+# }
+variable "access_git" {}
+# variable "ansible_role" {
+#   default = "kubernetes"
+# }
+variable "ansible_role" {}

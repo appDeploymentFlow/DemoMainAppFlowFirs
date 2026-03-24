@@ -26,12 +26,23 @@ jobs:
       # - name: setup terraform
       #   uses: hashicorp/setup-terraform@v3
       - name: creating worker01 server for deployment
-        run: bash app/terraform_code/create.sh
-        #run: echo 'infra is already created'
+        env:
+          ACCESS_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
+          USER: ${{ secrets.REPO_USER_NAME }}
+          SSH_PASS: ${{ secrets.WORKER01_SSH_PASS }}
+        #run: bash app/terraform_code/create.sh $SSH_PASS $USER $ACCESS_TOKEN kubernetes
+        run: echo 'infra is already created'
+  wait_time:
+    runs-on: ['workStation01']
+    needs: ['create_infra']
+    steps:
+      - name: wait till server is not setup
+        ansible.builtin.pause:
+          minutes: 1
   configure_packages:
     runs-on: ['workStation01']
     #environment: USER_NAME
-    needs: ['create_infra']
+    needs: ['wait_time','create_infra']
     steps:
       - name: checkout git repo code
         #uses: actions/checkout@v4
