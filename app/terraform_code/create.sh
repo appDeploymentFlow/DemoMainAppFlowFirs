@@ -4,9 +4,9 @@ terraform fmt --recursive
 # # #terraform init -backend-config=state.tfvars
 # terraform init
 terraform init
-terraform plan -var ssh_pass=${1} -var user_git=${2} -var access_git${3} -var ansible_role=${4}
+terraform plan -var ssh_pass=${1} -var user_git=${2} -var access_git=${3} -var ansible_role=${4}
 sleep 5s
-terraform apply -auto-approve -var ssh_pass=${1} -var user_git=${2} -var access_git${3} -var ansible_role=${4}
+terraform apply -auto-approve -var ssh_pass=${1} -var user_git=${2} -var access_git=${3} -var ansible_role=${4}
 
 #when want to specify path where all terrafrom moudle present
 # # terraform -chdir=app/terraform_code init
