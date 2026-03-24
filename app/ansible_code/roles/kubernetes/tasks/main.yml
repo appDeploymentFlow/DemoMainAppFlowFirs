@@ -125,8 +125,8 @@
 - name: create containerd directory
   ansible.builtin.file:
     path: /etc/containerd
-    state: direcotory
-    mode: '0755'
+    state: directory
+    mode: "0755"
 
 # containerd config default |sudo tee /etc/containerd/config.toml
 
