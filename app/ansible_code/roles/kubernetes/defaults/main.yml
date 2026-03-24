@@ -1,6 +1,6 @@
 #default variables, if i forget to pass these variable value while running "ansible-pull..." then these
 #values taken by tasks/main.yml file (main script file)
-hostname: "master-node"
+k8s_hostname: "master-node"
 
 # Set to true if running on AWS/Azure/GCP to prevent cloud-init resets
 # is_cloud_instance: false
