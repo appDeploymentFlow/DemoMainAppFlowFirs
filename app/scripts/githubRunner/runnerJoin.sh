@@ -12,6 +12,7 @@ sudo apt update
 RUNNER_TOKEN=$(curl -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${1}" -H "X-GitHub-Api-Version: 2026-03-10" https://api.github.com/repos/appDeploymentFlow/DemoMainAppFlowFirs/actions/runners/registration-token |jq -r '.token')
 echo "runner token is : ${RUNNER_TOKEN}"
 RUNNER_NAME="worker01"
+echo "runner name will be : ${RUNNER_NAME}"
 REPO_URL="https://github.com/appDeploymentFlow/DemoMainAppFlowFirs"
 ##install github runner package
 mkdir actions-runner && cd actions-runner
