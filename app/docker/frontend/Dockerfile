@@ -8,8 +8,8 @@ EOF
 # ADD https://expense-web-app.s3.amazonaws.com/frontend.zip /tmp/frontend.zip
 RUN rm -rf /usr/share/nginx/html/*
 # RUN unzip -o /tmp/frontend.zip -d /usr/share/nginx/html/
-COPY frontend /usr/share/nginx/html/
-COPY docker/frontend/proxy.conf /etc/nginx/conf.d/default.conf
+COPY app/frontend /usr/share/nginx/html/
+COPY app/docker/frontend/proxy.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
 #CMD service nginx start will start nginx but after completing task stop nginx
 CMD ["nginx", "-g", "daemon off"]

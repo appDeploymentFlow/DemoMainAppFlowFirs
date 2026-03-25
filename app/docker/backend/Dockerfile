@@ -4,7 +4,7 @@ apt update && apt install nodejs curl unzip npm vim mysql-client-8.0 wget -y
 useradd expense
 EOF
 WORKDIR /app
-COPY ./backend app
+COPY ./app/backend app
 RUN << EOF
 npm install
 chmod -R 755 /app
