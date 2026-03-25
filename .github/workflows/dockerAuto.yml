@@ -63,6 +63,7 @@ jobs:
   #       run: bash app/ansible_code/init.sh $USER $ACCESS_TOKEN kubernetes $SSH_PASS
   join_worker01_as_runner:
     runs-on: ['workStation01']
+    needs: ['create_infra']
     steps:
       - name: checkout scm of git
         uses: actions/checkout@v5
@@ -73,6 +74,7 @@ jobs:
         run: bash app/scripts/githubRunner/runnerJoin.sh $ACCESS_TOKEN $SSH_PASS
   get_worker01_public_ip:
     runs-on: ['worker01']
+    needs: ['join_worker01_as_runner']
     steps:
       - name: save worker public ip into bashrc
         run: |
@@ -81,6 +83,7 @@ jobs:
           source ~/.bashrc
   create_sonarqube_environment:
     runs-on: ['worker01']
+    needs: ['get_worker01_public_ip']
     steps:
       - name: checkout scm of git
         uses: actions/checkout@v5
@@ -90,6 +93,7 @@ jobs:
           bash app/scripts/sonarqube/sonarqubeInstall.sh
   analysis_code:
     runs-on: ['worker01']
+    needs: ['create_sonarqube_environment']
     steps:
       - name: checkout scm of git
         uses: actions/checkout@v5
@@ -101,6 +105,7 @@ jobs:
         run: bash app/scripts/sonar_scanner/frontendScan.sh
   create_image:
     runs-on: ['worker01']
+    needs: ['analysis_code']
     steps:
       - name: checkout scm of git
         uses: actions/checkout@v5
@@ -114,6 +119,7 @@ jobs:
         run: sudo docker build -t frontend:01 -f app/docker/frontend .
   create_expense_container:
     runs-on: ['worker01']
+    needs: ['create_image']
     steps:
       - name: checkout scm of git
         uses: actions/checkout@v5
