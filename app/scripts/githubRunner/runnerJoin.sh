@@ -21,7 +21,7 @@ curl -o actions-runner-linux-x64-2.332.0.tar.gz -L https://github.com/actions/ru
 echo "f2094522a6b9afeab07ffb586d1eb3f190b6457074282796c497ce7dce9e0f2a  actions-runner-linux-x64-2.332.0.tar.gz" | shasum -a 256 -c
 tar xzf ./actions-runner-linux-x64-2.332.0.tar.gz
 echo "current directory is : $(pwd)"
-./actions-runner/config.sh --unattended --replace --url $REPO_URL --token $RUNNER_TOKEN --name $RUNNER_NAME --labels linux,ubuntu,x64,$RUNNER_NAME --work _work
+./config.sh --unattended --replace --url $REPO_URL --token $RUNNER_TOKEN --name $RUNNER_NAME --labels linux,ubuntu,x64,$RUNNER_NAME --work _work
 sudo ./svc.sh install
 sudo systemctl start  actions.runner.appDeploymentFlow-DemoMainAppFlowFirs.$RUNNER_NAME.service
 EOF
