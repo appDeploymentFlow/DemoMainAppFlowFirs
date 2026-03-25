@@ -30,12 +30,12 @@ jobs:
           TF_VAR_user_git: ${{ secrets.REPO_USER_NAME }}
           TF_VAR_ssh_pass: ${{ secrets.WORKER01_SSH_PASS }}
           TF_VAR_ansible_role: "docker"
-        run: |
-          cd app/terraform_code
-          terraform init
-          terraform plan
-          terraform apply -auto-approve
-        #run: echo 'infra is already created'
+        # run: |
+        #   cd app/terraform_code
+        #   terraform init
+        #   terraform plan
+        #   terraform apply -auto-approve
+        run: echo 'infra is already created'
   # wait_time:
   #   runs-on: ['workStation01']
   #   needs: ['create_infra']

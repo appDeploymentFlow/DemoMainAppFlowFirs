@@ -3,15 +3,13 @@ sshpass -p "${2}" ssh -o StrictHostKeyChecking=no ubuntu@$worker01IP << 'EOF'
 # TEMPORARY DEBUG: Check if the first 3 characters of the token are correct
 echo "Token prefix: ${1:0:3}..."
 sudo apt update
-
 ##install github cli (gh)
-#sudo apt install -y gh
+sudo apt install -y gh
 ##login into github account using github cli (gh)
-#echo "${1}" | gh auth login --with-token --hostname github.com --git-protocol https
+echo "${1}" | gh auth login --with-token --hostname github.com --git-protocol https
 ##generate runner token using github cli (gh)
-#RUNNER_TOKEN=$(gh api --method POST /repos/appDeploymentFlow/DemoMainAppFlowFirs/actions/runners/registration-token -q .token)
-
-RUNNER_TOKEN=$(curl -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${1}" -H "X-GitHub-Api-Version: 2026-03-10" https://api.github.com/repos/appDeploymentFlow/DemoMainAppFlowFirs/actions/runners/registration-token |jq -r '.token')
+RUNNER_TOKEN=$(gh api --method POST /repos/appDeploymentFlow/DemoMainAppFlowFirs/actions/runners/registration-token -q .token)
+#RUNNER_TOKEN=$(curl -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${1}" -H "X-GitHub-Api-Version: 2026-03-10" https://api.github.com/repos/appDeploymentFlow/DemoMainAppFlowFirs/actions/runners/registration-token |jq -r '.token')
 RUNNER_NAME="worker01"
 REPO_URL="https://github.com/appDeploymentFlow/DemoMainAppFlowFirs"
 ##install github runner package
