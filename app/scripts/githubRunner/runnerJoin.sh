@@ -9,8 +9,9 @@ sudo apt update
 ##generate runner token using github cli (gh)
 #RUNNER_TOKEN=$(gh api --method POST /repos/appDeploymentFlow/DemoMainAppFlowFirs/actions/runners/registration-token -q .token)
 
-RUNNER_TOKEN=$(curl -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${1}" -H "X-GitHub-Api-Version: 2026-03-10" https://api.github.com/repos/appDeploymentFlow/DemoMainAppFlowFirs/actions/runners/registration-token |jq -r '.token')
-#echo "runner token is : ${RUNNER_TOKEN}"
+#RUNNER_TOKEN=$(curl -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${1}" -H "X-GitHub-Api-Version: 2026-03-10" https://api.github.com/repos/appDeploymentFlow/DemoMainAppFlowFirs/actions/runners/registration-token |jq -r '.token')
+RUNNER_TOKEN=$(curl -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${1}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/api/v3/repos/appDeploymentFlow/DemoMainAppFlowFirs/actions/runners/registration-token | jq -r '.token')
+echo "runner token is : ${RUNNER_TOKEN}" >> demo.txt
 RUNNER_NAME="worker01"
 #echo "runner name will be : ${RUNNER_NAME}"
 REPO_URL="https://github.com/appDeploymentFlow/DemoMainAppFlowFirs"
