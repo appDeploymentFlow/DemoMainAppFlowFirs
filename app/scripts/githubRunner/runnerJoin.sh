@@ -1,5 +1,7 @@
 worker01IP=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=worker01" --query "Reservations[].Instances[].PublicIpAddress" --output text)
 sshpass -p "${2}" ssh -o StrictHostKeyChecking=no ubuntu@$worker01IP << 'EOF'
+# TEMPORARY DEBUG: Check if the first 3 characters of the token are correct
+echo "Token prefix: ${1:0:3}..."
 sudo apt update
 
 ##install github cli (gh)
@@ -9,11 +11,8 @@ sudo apt update
 ##generate runner token using github cli (gh)
 #RUNNER_TOKEN=$(gh api --method POST /repos/appDeploymentFlow/DemoMainAppFlowFirs/actions/runners/registration-token -q .token)
 
-export RUNNER_TOKEN=$(curl -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${1}" -H "X-GitHub-Api-Version: 2026-03-10" https://api.github.com/repos/appDeploymentFlow/DemoMainAppFlowFirs/actions/runners/registration-token |jq -r '.token')
-#RUNNER_TOKEN=$(curl -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${1}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/api/v3/repos/appDeploymentFlow/DemoMainAppFlowFirs/actions/runners/registration-token | jq -r '.token')
-echo "runner token is : ${RUNNER_TOKEN}" >> demo.txt
+RUNNER_TOKEN=$(curl -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${1}" -H "X-GitHub-Api-Version: 2026-03-10" https://api.github.com/repos/appDeploymentFlow/DemoMainAppFlowFirs/actions/runners/registration-token |jq -r '.token')
 RUNNER_NAME="worker01"
-#echo "runner name will be : ${RUNNER_NAME}"
 REPO_URL="https://github.com/appDeploymentFlow/DemoMainAppFlowFirs"
 ##install github runner package
 mkdir -p actions-runner && cd actions-runner

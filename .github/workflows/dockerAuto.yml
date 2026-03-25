@@ -71,7 +71,7 @@ jobs:
         env:
           ACCESS_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
           SSH_PASS: ${{ secrets.WORKER01_SSH_PASS }}
-        run: bash app/scripts/githubRunner/runnerJoin.sh $ACCESS_TOKEN $SSH_PASS
+        run: bash app/scripts/githubRunner/runnerJoin.sh "$ACCESS_TOKEN" "$SSH_PASS"
   get_worker01_public_ip:
     runs-on: ['worker01']
     needs: ['join_worker01_as_runner']
