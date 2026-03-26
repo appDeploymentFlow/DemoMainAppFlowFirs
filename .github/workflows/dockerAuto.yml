@@ -78,6 +78,7 @@ jobs:
     runs-on: ['worker01']
     needs: ['join_worker01_as_runner']
     steps:
+        uses: actions/checkout@v5
       - name: save worker public ip into bashrc
         # run: |
         #   echo 'export TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")' >> ~/.bashrc
