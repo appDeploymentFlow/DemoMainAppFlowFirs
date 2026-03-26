@@ -28,6 +28,7 @@ source ~/.bashrc
 #we have added USER_TOKEN, project_name, project_key, PROJECT_TOKEN into bashrc, and can access only on worker01 server anytime
 else
 echo "worker01 public ip is not provided.........."
+echo "Error: worker ip not found"
 sleep 120
+exit 1
 fi
-exit
