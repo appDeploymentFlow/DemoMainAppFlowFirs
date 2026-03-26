@@ -3,7 +3,8 @@ resource "aws_instance" "main" {
   instance_type = var.instance_type
   key_name = "serverKey01"
   subnet_id = aws_subnet.subnet_main.id
-  security_groups = [aws_security_group.sg.id]
+  # security_groups = [aws_security_group.sg.id]
+  vpc_security_group_ids = [aws_security_group.sg.id]
   availability_zone = var.region
   associate_public_ip_address = true
   root_block_device {
@@ -23,6 +24,11 @@ resource "aws_instance" "main" {
     Name = var.name
   }
   user_data_base64 = filebase64("./user.sh")
+  #to stop destory instance again and again
+  # lifecycle {
+  #   prevent_destroy = true
+  #   ignore_changes = [ user_data_base64, ami ]
+  # }
 }
 
 resource "null_resource" "install_packages" {

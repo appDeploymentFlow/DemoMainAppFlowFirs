@@ -30,12 +30,12 @@ jobs:
           TF_VAR_user_git: ${{ secrets.REPO_USER_NAME }}
           TF_VAR_ssh_pass: ${{ secrets.WORKER01_SSH_PASS }}
           TF_VAR_ansible_role: "docker"
-        # run: |
-        #   cd app/terraform_code
-        #   terraform init
-        #   terraform plan
-        #   terraform apply -auto-approve
-        run: echo 'infra is already created'
+        run: |
+          cd app/terraform_code
+          terraform init
+          terraform plan
+          terraform apply -auto-approve
+        # run: echo 'infra is already created'
   # wait_time:
   #   runs-on: ['workStation01']
   #   needs: ['create_infra']
@@ -71,17 +71,18 @@ jobs:
         env:
           ACCESS_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
           SSH_PASS: ${{ secrets.WORKER01_SSH_PASS }}
-        #run: bash app/scripts/githubRunner/runnerJoin.sh "$ACCESS_TOKEN" "$SSH_PASS"
-        run: echo 'worker01 is joined as self hosted runner'
+        run: bash app/scripts/githubRunner/runnerJoin.sh "$ACCESS_TOKEN" "$SSH_PASS"
+        # run: echo 'worker01 is joined as self hosted runner'
   get_worker01_public_ip:
     runs-on: ['worker01']
     needs: ['join_worker01_as_runner']
     steps:
       - name: save worker public ip into bashrc
         run: |
-          TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
-          echo WORKER01_PUBLIC_IP=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/public-ipv4) >> ~/.bashrc
+          echo 'export TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")'
+          echo 'export WORKER01_PUBLIC_IP=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/public-ipv4)' >> ~/.bashrc
           source ~/.bashrc
+        # run: echo 'public ip added into bashrc'
   create_sonarqube_environment:
     runs-on: ['worker01']
     needs: ['get_worker01_public_ip']
@@ -89,10 +90,10 @@ jobs:
       - name: checkout scm of git
         uses: actions/checkout@v5
       - name: sonarqube container creation
-        # run: |
-        #   sudo docker network create --subnet 192.168.200.0/24 --driver bridge expense-network01
-        #   bash app/scripts/sonarqube/sonarqubeInstall.sh
-        run: echo 'sonarqube is running'
+        run: |
+          sudo docker network create --subnet 192.168.200.0/24 --driver bridge expense-network01
+          bash app/scripts/sonarqube/sonarqubeInstall.sh
+        # run: echo 'sonarqube is running'
   analysis_code:
     runs-on: ['worker01']
     needs: ['create_sonarqube_environment']

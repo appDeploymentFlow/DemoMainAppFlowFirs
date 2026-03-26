@@ -1,9 +1,12 @@
+if [ -n "${WORKER01_PUBLIC_IP}" ]
+then
 #Wait for SonarQube to be up
 echo "Waiting for SonarQube to start..."
 until $(curl --output /dev/null --silent --head --fail http://${WORKER01_PUBLIC_IP}:9000); do
     printf '.'
     sleep 5
 done
+# sleep 180s
 #Change default password (admin -> YourNewPassword)
 #Default credentials are admin:admin
 curl -u admin:admin -X POST \
@@ -23,3 +26,8 @@ echo 'PROJECT_TOKEN=$(curl -u admin:${1} -X POST \
     "http://${WORKER01_PUBLIC_IP}:9000/api/user_tokens/generate?name=project-token&projectKey=${project_key}" | jq -r .token)' >> ~/.bashrc
 source ~/.bashrc
 #we have added USER_TOKEN, project_name, project_key, PROJECT_TOKEN into bashrc, and can access only on worker01 server anytime
+else
+echo "worker01 public ip is not provided.........."
+sleep 120
+fi
+exit
