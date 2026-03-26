@@ -94,7 +94,7 @@ locals {
   inbound_ports = [22, 9000, 3306, 8080, 80, 9090, 3000, 9100]
 }
 resource "aws_security_group" "sg" {
-  # name        = "myFirstSG"
+  name        = "myFirstSG"
   vpc_id = aws_vpc.vpc_main.id
   description = "Allow multiple ports for inbound"
   dynamic "ingress" {

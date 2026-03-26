@@ -30,12 +30,12 @@ jobs:
           TF_VAR_user_git: ${{ secrets.REPO_USER_NAME }}
           TF_VAR_ssh_pass: ${{ secrets.WORKER01_SSH_PASS }}
           TF_VAR_ansible_role: "docker"
-        run: |
-          cd app/terraform_code
-          terraform init
-          terraform plan
-          terraform apply -auto-approve
-        # run: echo 'infra is already created'
+        # run: |
+        #   cd app/terraform_code
+        #   terraform init
+        #   terraform plan
+        #   terraform apply -auto-approve
+        run: echo 'infra is already created'
   wait_time:
     runs-on: ['workStation01']
     needs: ['create_infra']
@@ -64,7 +64,7 @@ jobs:
 
   join_worker01_as_runner:
     runs-on: ['workStation01']
-    needs: ['create_infra']
+    needs: ['wait_time']
     steps:
       - name: checkout scm of git
         uses: actions/checkout@v5
@@ -92,10 +92,10 @@ jobs:
       - name: checkout scm of git
         uses: actions/checkout@v5
       - name: sonarqube container creation
-        run: |
-          sudo docker network create --subnet 192.168.200.0/24 --driver bridge expense-network01
-          bash app/scripts/sonarqube/sonarqubeInstall.sh
-        # run: echo 'sonarqube is running'
+        # run: |
+        #   sudo docker network create --subnet 192.168.200.0/24 --driver bridge expense-network01
+        #   bash app/scripts/sonarqube/sonarqubeInstall.sh
+        run: echo 'sonarqube is running'
   analysis_code:
     runs-on: ['worker01']
     needs: ['create_sonarqube_environment']
