@@ -34,15 +34,15 @@ jobs:
           cd app/terraform_code
           terraform init
           terraform plan
-          # terraform apply -auto-approve
+          terraform apply -auto-approve
         # run: echo 'infra is already created'
-  # wait_time:
-  #   runs-on: ['workStation01']
-  #   needs: ['create_infra']
-  #   steps:
-  #     - name: wait till server is not setup 6min
-  #       run: sleep 360s
-  #       shell: bash
+  wait_time:
+    runs-on: ['workStation01']
+    needs: ['create_infra']
+    steps:
+      - name: wait till server is not setup 6min
+        run: sleep 120s
+        shell: bash
   # configure_packages:
   #   runs-on: ['workStation01']
   #   #environment: USER_NAME
