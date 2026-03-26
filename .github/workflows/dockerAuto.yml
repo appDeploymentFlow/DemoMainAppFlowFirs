@@ -30,18 +30,19 @@ jobs:
           TF_VAR_user_git: ${{ secrets.REPO_USER_NAME }}
           TF_VAR_ssh_pass: ${{ secrets.WORKER01_SSH_PASS }}
           TF_VAR_ansible_role: "docker"
-        run: |
-          cd app/terraform_code
-          terraform init
-          terraform plan
-          terraform apply -auto-approve
-        # run: echo 'infra is already created'
+        # run: |
+        #   cd app/terraform_code
+        #   terraform init
+        #   terraform plan
+        #   terraform apply -auto-approve
+        run: echo 'infra is already created'
   wait_time:
     runs-on: ['workStation01']
     needs: ['create_infra']
     steps:
       - name: wait till server is not setup 6min
-        run: sleep 120s
+        # run: sleep 120s
+        run: sleep 30s
         shell: bash
   # configure_packages:
   #   runs-on: ['workStation01']
@@ -71,8 +72,8 @@ jobs:
         env:
           ACCESS_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
           SSH_PASS: ${{ secrets.WORKER01_SSH_PASS }}
-        run: bash app/scripts/githubRunner/runnerJoin.sh "$ACCESS_TOKEN" "$SSH_PASS"
-        # run: echo 'worker01 is joined as self hosted runner'
+        # run: bash app/scripts/githubRunner/runnerJoin.sh "$ACCESS_TOKEN" "$SSH_PASS"
+        run: echo 'worker01 is joined as self hosted runner'
   get_worker01_public_ip:
     runs-on: ['worker01']
     needs: ['join_worker01_as_runner']
@@ -94,12 +95,12 @@ jobs:
       - name: Debug worker01 public ip
         run: |
           echo "IP from get_worker01_public_ip job:"
-          echo "${{ needs.save_public_ip.outputs.public_ip }}"
+          echo "${{ WORKER01_PUBLIC_IP }}"
       - name: sonarqube container creation
-        run: |
-          sudo docker network create --subnet 192.168.200.0/24 --driver bridge expense-network01
-          bash app/scripts/sonarqube/sonarqubeInstall.sh
-        # run: echo 'sonarqube is running'
+        # run: |
+        #   sudo docker network create --subnet 192.168.200.0/24 --driver bridge expense-network01
+        #   bash app/scripts/sonarqube/sonarqubeInstall.sh
+        run: echo 'sonarqube is running'
   analysis_code:
     runs-on: ['worker01']
     needs: ['create_sonarqube_environment']
@@ -108,6 +109,14 @@ jobs:
     steps:
       - name: checkout scm of git
         uses: actions/checkout@v5
+      - name: Debug worker01 public ip
+        run: |
+          echo "IP from get_worker01_public_ip job:"
+          echo "${{ WORKER01_PUBLIC_IP }}"
+      - name: Debug worker01 public ip02
+        run: |
+          echo "IP from get_worker01_public_ip job:"
+          echo ${{ WORKER01_PUBLIC_IP }}
       - name: generate project and its token
         run: bash app/scripts/sonar_scanner/project_token.sh ${{ secrets.SONARQUBE_LOGIN_PASS }}
       - name: analysis backend code
