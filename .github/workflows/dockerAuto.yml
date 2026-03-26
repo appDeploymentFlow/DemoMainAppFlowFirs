@@ -136,13 +136,13 @@ jobs:
       - name: debug ip of worker
         run: echo "$WORKER01_PUBLIC_IP"
       - name: create db image
-        run: sudo docker build --network=host -t db:01 -f app/docker/db .
+        run: sudo docker build --network=host -t db:01 -f app/docker/db/Dockerfile .
       - name: create backend image
-        run: sudo docker build --network=host -t backend:01 -f app/docker/backend .
+        run: sudo docker build --network=host -t backend:01 -f app/docker/backend/Dockerfile .
       - name: modified proxy.conf file with server's public ip
         run: sed -i "s/^[[:space:]]*server_name .*/    server_name ${WORKER01_PUBLIC_IP};/" app/docker/frontend/proxy.conf
       - name: create frontend image
-        run: sudo docker build -t frontend:01 -f app/docker/frontend .
+        run: sudo docker build -t frontend:01 -f app/docker/frontend/Dockerfile .
   create_expense_container:
     runs-on: ['worker01']
     needs: ['create_image']
