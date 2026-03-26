@@ -78,6 +78,7 @@ jobs:
     runs-on: ['worker01']
     needs: ['join_worker01_as_runner']
     steps:
+      - name: checkout scm of git
         uses: actions/checkout@v5
       - name: save worker public ip into bashrc
         # run: |
