@@ -42,7 +42,7 @@ jobs:
     steps:
       - name: wait till server is not setup 6min
         # run: sleep 120s
-        run: sleep 30s
+        run: sleep 5s
         shell: bash
   # configure_packages:
   #   runs-on: ['workStation01']
@@ -99,12 +99,14 @@ jobs:
         run: echo 'sonarqube is running'
   analysis_code:
     runs-on: ['worker01']
-    needs: ['create_sonarqube_environment']
+    needs: ['create_sonarqube_environment', 'get_worker01_public_ip']
     env:
       WORKER01_PUBLIC_IP: ${{ needs.get_worker01_public_ip.outputs.public_ip }}
     steps:
       - name: checkout scm of git
         uses: actions/checkout@v5
+      - name: Debug ip
+        run: echo "$WORKER01_PUBLIC_IP"
       - name: generate project and its token
         run: bash app/scripts/sonar_scanner/project_token.sh ${{ secrets.SONARQUBE_LOGIN_PASS }}
       - name: analysis backend code
@@ -113,12 +115,14 @@ jobs:
         run: bash app/scripts/sonar_scanner/frontendScan.sh
   create_image:
     runs-on: ['worker01']
-    needs: ['analysis_code']
+    needs: ['analysis_code', 'get_worker01_public_ip']
     env:
       WORKER01_PUBLIC_IP: ${{ needs.get_worker01_public_ip.outputs.public_ip }}
     steps:
       - name: checkout scm of git
         uses: actions/checkout@v5
+      - name: debug ip of worker
+        run: echo "$WORKER01_PUBLIC_IP"
       - name: create db image
         run: sudo docker build --network=host -t db:01 -f app/docker/db .
       - name: create backend image
