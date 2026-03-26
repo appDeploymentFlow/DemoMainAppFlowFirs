@@ -12,20 +12,17 @@ jobs:
       public_ip: ${{ steps.get-ip.outputs.ip }}
     steps:
       - id: get-ip
-        run: |
-          echo export TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600") >> ~/.bashrc
-          echo export IP=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/public-ipv4) >> ~/.bashrc
-          echo "ip=${IP}" >> $GITHUB_OUTPUT
-  user_public_ip:
-    runs-on: ['workStation01']
-    needs: ['save_public_ip']
-    env:
-      WORKER01_PUBLIC_IP: ${{ needs.save_public_ip.outputs.public_ip }}
-    steps:
-      - name: checkout git repo code
-        uses: actions/checkout@v5
-      - name: run task
-        run: bash app/scripts/demo.sh
+        run: bash app/scripts/worker_ip.sh
+  # user_public_ip:
+  #   runs-on: ['workStation01']
+  #   needs: ['save_public_ip']
+  #   env:
+  #     WORKER01_PUBLIC_IP: ${{ needs.save_public_ip.outputs.public_ip }}
+  #   steps:
+  #     - name: checkout git repo code
+  #       uses: actions/checkout@v5
+  #     - name: run task
+  #       run: bash app/scripts/demo.sh
   # compile:
   #   runs-on: ['workStation01']
   #   steps:
