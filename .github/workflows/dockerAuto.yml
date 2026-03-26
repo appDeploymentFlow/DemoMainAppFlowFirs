@@ -6,133 +6,148 @@ defaults:
   run:
     shell: bash
 jobs:
-  compile:
+  save_public_ip:
     runs-on: ['workStation01']
     steps:
       - name: checkout git repo code
         uses: actions/checkout@v5
       - name: compile code
-        run: echo 'code is compiled'
-  create_infra:
+        run: bash app/scripts/worker_ip.sh
+  user_public_ip:
     runs-on: ['workStation01']
-    needs: ['compile']
+    needs: ['save_public_ip']
     steps:
       - name: checkout git repo code
         uses: actions/checkout@v5
-      - name: creating worker01 server for deployment
-        # env:
-        #   ACCESS_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
-        #   USER: ${{ secrets.REPO_USER_NAME }}
-        #   SSH_PASS: ${{ secrets.WORKER01_SSH_PASS }}
-        #run: bash app/terraform_code/create.sh $SSH_PASS $USER $ACCESS_TOKEN kubernetes
-        env:              #define variable with "TF_VAR_var-name-define-file" can be taken automatically by terraform
-          TF_VAR_access_git: ${{ secrets.REPO_ACCESS_TOKEN }}
-          TF_VAR_user_git: ${{ secrets.REPO_USER_NAME }}
-          TF_VAR_ssh_pass: ${{ secrets.WORKER01_SSH_PASS }}
-          TF_VAR_ansible_role: "docker"
-        # run: |
-        #   cd app/terraform_code
-        #   terraform init
-        #   terraform plan
-        #   terraform apply -auto-approve
-        run: echo 'infra is already created'
-  wait_time:
-    runs-on: ['workStation01']
-    needs: ['create_infra']
-    steps:
-      - name: wait till server is not setup 6min
-        run: sleep 60s
-        shell: bash
-  # configure_packages:
+      - name: run task
+        run: bash app/scripts/demo.sh
+  # compile:
   #   runs-on: ['workStation01']
-  #   #environment: USER_NAME
-  #   needs: ['wait_time','create_infra']
   #   steps:
   #     - name: checkout git repo code
-  #       #uses: actions/checkout@v4
   #       uses: actions/checkout@v5
-  #     # - name: setup python
-  #     #   uses: actions/setup-python@v5
-  #     #   with:
-  #     #     python-version: '3.12.3'
-  #     - name: configure source code
+  #     - name: compile code
+  #       run: echo 'code is compiled'
+  # create_infra:
+  #   runs-on: ['workStation01']
+  #   needs: ['compile']
+  #   steps:
+  #     - name: checkout git repo code
+  #       uses: actions/checkout@v5
+  #     - name: creating worker01 server for deployment
+  #       # env:
+  #       #   ACCESS_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
+  #       #   USER: ${{ secrets.REPO_USER_NAME }}
+  #       #   SSH_PASS: ${{ secrets.WORKER01_SSH_PASS }}
+  #       #run: bash app/terraform_code/create.sh $SSH_PASS $USER $ACCESS_TOKEN kubernetes
+  #       env:              #define variable with "TF_VAR_var-name-define-file" can be taken automatically by terraform
+  #         TF_VAR_access_git: ${{ secrets.REPO_ACCESS_TOKEN }}
+  #         TF_VAR_user_git: ${{ secrets.REPO_USER_NAME }}
+  #         TF_VAR_ssh_pass: ${{ secrets.WORKER01_SSH_PASS }}
+  #         TF_VAR_ansible_role: "docker"
+  #       # run: |
+  #       #   cd app/terraform_code
+  #       #   terraform init
+  #       #   terraform plan
+  #       #   terraform apply -auto-approve
+  #       run: echo 'infra is already created'
+  # wait_time:
+  #   runs-on: ['workStation01']
+  #   needs: ['create_infra']
+  #   steps:
+  #     - name: wait till server is not setup 6min
+  #       run: sleep 60s
+  #       shell: bash
+  # # configure_packages:
+  # #   runs-on: ['workStation01']
+  # #   #environment: USER_NAME
+  # #   needs: ['wait_time','create_infra']
+  # #   steps:
+  # #     - name: checkout git repo code
+  # #       #uses: actions/checkout@v4
+  # #       uses: actions/checkout@v5
+  # #     # - name: setup python
+  # #     #   uses: actions/setup-python@v5
+  # #     #   with:
+  # #     #     python-version: '3.12.3'
+  # #     - name: configure source code
+  # #       env:
+  # #         ACCESS_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
+  # #         USER: ${{ secrets.REPO_USER_NAME }}
+  # #         SSH_PASS: ${{ secrets.WORKER01_SSH_PASS }}
+  # #       run: bash app/ansible_code/init.sh $USER $ACCESS_TOKEN kubernetes $SSH_PASS
+
+  # join_worker01_as_runner:
+  #   runs-on: ['workStation01']
+  #   needs: ['wait_time']
+  #   steps:
+  #     - name: checkout scm of git
+  #       uses: actions/checkout@v5
+  #     - name: execute github runner join script
   #       env:
   #         ACCESS_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
-  #         USER: ${{ secrets.REPO_USER_NAME }}
   #         SSH_PASS: ${{ secrets.WORKER01_SSH_PASS }}
-  #       run: bash app/ansible_code/init.sh $USER $ACCESS_TOKEN kubernetes $SSH_PASS
-
-  join_worker01_as_runner:
-    runs-on: ['workStation01']
-    needs: ['wait_time']
-    steps:
-      - name: checkout scm of git
-        uses: actions/checkout@v5
-      - name: execute github runner join script
-        env:
-          ACCESS_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
-          SSH_PASS: ${{ secrets.WORKER01_SSH_PASS }}
-        #run: bash app/scripts/githubRunner/runnerJoin.sh "$ACCESS_TOKEN" "$SSH_PASS"
-        run: echo 'worker01 is joined as self hosted runner'
-  get_worker01_public_ip:
-    runs-on: ['worker01']
-    needs: ['join_worker01_as_runner']
-    steps:
-      - name: checkout scm of git
-        uses: actions/checkout@v5
-      - name: save worker public ip into bashrc
-        # run: |
-        #   echo 'export TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")' >> ~/.bashrc
-        #   echo 'export WORKER01_PUBLIC_IP=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/public-ipv4)' >> ~/.bashrc
-        #   source ~/.bashrc
-        # run: echo 'public ip added into bashrc'
-        run: bash app/scripts/worker_ip.sh
-  create_sonarqube_environment:
-    runs-on: ['worker01']
-    needs: ['get_worker01_public_ip']
-    steps:
-      - name: checkout scm of git
-        uses: actions/checkout@v5
-      - name: sonarqube container creation
-        # run: |
-        #   sudo docker network create --subnet 192.168.200.0/24 --driver bridge expense-network01
-        #   bash app/scripts/sonarqube/sonarqubeInstall.sh
-        run: echo 'sonarqube is running'
-  analysis_code:
-    runs-on: ['worker01']
-    needs: ['create_sonarqube_environment']
-    steps:
-      - name: checkout scm of git
-        uses: actions/checkout@v5
-      - name: generate project and its token
-        run: bash app/scripts/sonar_scanner/project_token.sh ${{ secrets.SONARQUBE_LOGIN_PASS }}
-      - name: analysis backend code
-        run: bash app/scripts/sonar_scanner/backendScan.sh
-      - name: analysis frontend code
-        run: bash app/scripts/sonar_scanner/frontendScan.sh
-  create_image:
-    runs-on: ['worker01']
-    needs: ['analysis_code']
-    steps:
-      - name: checkout scm of git
-        uses: actions/checkout@v5
-      - name: create db image
-        run: sudo docker build --network=host -t db:01 -f app/docker/db .
-      - name: create backend image
-        run: sudo docker build --network=host -t backend:01 -f app/docker/backend .
-      - name: modified proxy.conf file with server's public ip
-        run: sed -i "s/^[[:space:]]*server_name .*/    server_name ${WORKER01_PUBLIC_IP};/" app/docker/frontend/proxy.conf
-      - name: create frontend image
-        run: sudo docker build -t frontend:01 -f app/docker/frontend .
-  create_expense_container:
-    runs-on: ['worker01']
-    needs: ['create_image']
-    steps:
-      - name: checkout scm of git
-        uses: actions/checkout@v5
-      - name: create db container
-        run: sudo docker run -itd --name db --ip 192.168.200.10 --network expense-network01 -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root db:01
-      - name: create backend container
-        run: sudo docker run -itd --name backend --ip 192.168.200.11 --network expense-network01 -p 8080:8080 backend:01 /bin/bash
-      - name: create frontend container
-        run: sudo docker run -itd --name frontend --ip 192.168.200.12 --network expense-network01 -p 80:80 frontend:01 /bin/bash
+  #       #run: bash app/scripts/githubRunner/runnerJoin.sh "$ACCESS_TOKEN" "$SSH_PASS"
+  #       run: echo 'worker01 is joined as self hosted runner'
+  # get_worker01_public_ip:
+  #   runs-on: ['worker01']
+  #   needs: ['join_worker01_as_runner']
+  #   steps:
+  #     - name: checkout scm of git
+  #       uses: actions/checkout@v5
+  #     - name: save worker public ip into bashrc
+  #       # run: |
+  #       #   echo 'export TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")' >> ~/.bashrc
+  #       #   echo 'export WORKER01_PUBLIC_IP=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/public-ipv4)' >> ~/.bashrc
+  #       #   source ~/.bashrc
+  #       # run: echo 'public ip added into bashrc'
+  #       run: bash app/scripts/worker_ip.sh
+  # create_sonarqube_environment:
+  #   runs-on: ['worker01']
+  #   needs: ['get_worker01_public_ip']
+  #   steps:
+  #     - name: checkout scm of git
+  #       uses: actions/checkout@v5
+  #     - name: sonarqube container creation
+  #       # run: |
+  #       #   sudo docker network create --subnet 192.168.200.0/24 --driver bridge expense-network01
+  #       #   bash app/scripts/sonarqube/sonarqubeInstall.sh
+  #       run: echo 'sonarqube is running'
+  # analysis_code:
+  #   runs-on: ['worker01']
+  #   needs: ['create_sonarqube_environment']
+  #   steps:
+  #     - name: checkout scm of git
+  #       uses: actions/checkout@v5
+  #     - name: generate project and its token
+  #       run: bash app/scripts/sonar_scanner/project_token.sh ${{ secrets.SONARQUBE_LOGIN_PASS }}
+  #     - name: analysis backend code
+  #       run: bash app/scripts/sonar_scanner/backendScan.sh
+  #     - name: analysis frontend code
+  #       run: bash app/scripts/sonar_scanner/frontendScan.sh
+  # create_image:
+  #   runs-on: ['worker01']
+  #   needs: ['analysis_code']
+  #   steps:
+  #     - name: checkout scm of git
+  #       uses: actions/checkout@v5
+  #     - name: create db image
+  #       run: sudo docker build --network=host -t db:01 -f app/docker/db .
+  #     - name: create backend image
+  #       run: sudo docker build --network=host -t backend:01 -f app/docker/backend .
+  #     - name: modified proxy.conf file with server's public ip
+  #       run: sed -i "s/^[[:space:]]*server_name .*/    server_name ${WORKER01_PUBLIC_IP};/" app/docker/frontend/proxy.conf
+  #     - name: create frontend image
+  #       run: sudo docker build -t frontend:01 -f app/docker/frontend .
+  # create_expense_container:
+  #   runs-on: ['worker01']
+  #   needs: ['create_image']
+  #   steps:
+  #     - name: checkout scm of git
+  #       uses: actions/checkout@v5
+  #     - name: create db container
+  #       run: sudo docker run -itd --name db --ip 192.168.200.10 --network expense-network01 -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root db:01
+  #     - name: create backend container
+  #       run: sudo docker run -itd --name backend --ip 192.168.200.11 --network expense-network01 -p 8080:8080 backend:01 /bin/bash
+  #     - name: create frontend container
+  #       run: sudo docker run -itd --name frontend --ip 192.168.200.12 --network expense-network01 -p 80:80 frontend:01 /bin/bash
