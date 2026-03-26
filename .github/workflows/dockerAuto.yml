@@ -113,10 +113,6 @@ jobs:
         run: |
           echo "IP from get_worker01_public_ip job:"
           echo "${{ WORKER01_PUBLIC_IP }}"
-      - name: Debug worker01 public ip02
-        run: |
-          echo "IP from get_worker01_public_ip job:"
-          echo ${{ WORKER01_PUBLIC_IP }}
       - name: generate project and its token
         run: bash app/scripts/sonar_scanner/project_token.sh ${{ secrets.SONARQUBE_LOGIN_PASS }}
       - name: analysis backend code
