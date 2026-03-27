@@ -27,10 +27,19 @@ then
     #output of curl -u admin:admin "http://${WORKER01_PUBLIC_IP}:9000/api/authentication/validate" will be {"valid":true} if authetication pass
     if [ $RESULT ]
     then
+        echo "Authentication successfully, new password has been set successfully"
         #Generate a Global Analysis Token
         USER_TOKEN=$(curl -u admin:${1} -X POST \
-            "http://${WORKER01_PUBLIC_IP}:9000/api/user_tokens/generate?name=automation-token" | jq -r .token)
+            "http://${WORKER01_PUBLIC_IP}:9000/api/user_tokens/generate?name=sonar-admin-token" | jq -r .token)
         #create project using sonarqube API
+        # if [[ -n "$USER_TOKEN" && "$USER_TOKEN" != "null" ]]; then
+        if [ -n "$USER_TOKEN" -a "$USER_TOKEN" != "null" ]; then
+          echo "User token is generated successfully"
+        else
+          echo "user token is not genereated, check code...."
+          sleep 5s
+          exit 1;
+        fi
         echo "User token for project is: ${USER_TOKEN}"
         #adding user token into gitnub env and can accessable with this job (analysis_code) only by any step
         echo "USER_TOKEN=${USER_TOKEN}" >> $GITHUB_ENV
@@ -49,10 +58,19 @@ then
             "http://${WORKER01_PUBLIC_IP}:9000/api/projects/create?name=${backend_project_name}&project=${backend_project_key}"
         #Generate a token specifically for this project using sonarqube API
         BACKEND_PROJECT_TOKEN=$(curl -u admin:${1} -X POST \
-            "http://${WORKER01_PUBLIC_IP}:9000/api/user_tokens/generate?name=${backend_project_key}-token&projectKey=${backend_project_key}" | jq -r .token) \
-            | tee backend_token_response.json \
-            | jq -r '.token'
+            "http://${WORKER01_PUBLIC_IP}:9000/api/user_tokens/generate?name=${backend_project_key}-token&projectKey=${backend_project_key}" | jq -r .token)
         echo "Backend Project token is : ${BACKEND_PROJECT_TOKEN}"
+        # if [[ -n "$BACKEND_PROJECT_TOKEN" && "$BACKEND_PROJECT_TOKEN" != "null" ]]; then
+        if [ -n "$BACKEND_PROJECT_TOKEN" -a "$BACKEND_PROJECT_TOKEN" != "null" ]; then
+        #   echo "::add-mask::${BACKEND_PROJECT_TOKEN}"
+        #   echo "Backend token created"
+          echo "Backend project token is generated successfully"
+        else
+          echo "Backend project token is not genereated, check code...."
+          sleep 5s
+          exit 1;
+        fi
+        
         #adding backend project token into gitnub env so that i can use this inside next steps backend scan and frontend scan, can't access outside this job (analysis_code)
         echo "BACKEND_PROJECT_TOKEN=${BACKEND_PROJECT_TOKEN}" >> $GITHUB_ENV
         sleep 10s
@@ -71,10 +89,18 @@ then
             "http://${WORKER01_PUBLIC_IP}:9000/api/projects/create?name=${frontend_project_name}&project=${frontend_project_key}"
         #Generate a token specifically for this project using sonarqube API
         FRONTEND_PROJECT_TOKEN=$(curl -u admin:${1} -X POST \
-            "http://${WORKER01_PUBLIC_IP}:9000/api/user_tokens/generate?name=${frontend_project_key}-token&projectKey=${frontend_project_key}" | jq -r .token) \
-            | tee frontend_token_response.json \
-            | jq -r '.token'
+            "http://${WORKER01_PUBLIC_IP}:9000/api/user_tokens/generate?name=${frontend_project_key}-token&projectKey=${frontend_project_key}" | jq -r .token)
         echo "Frontend Project token is : ${FRONTEND_PROJECT_TOKEN}"
+        # if [[ -n "$FRONTEND_PROJECT_TOKEN" && "$FRONTEND_PROJECT_TOKEN" != "null" ]]; then
+        if [ -n "$FRONTEND_PROJECT_TOKEN" -a "$FRONTEND_PROJECT_TOKEN" != "null" ]; then
+        #   echo "::add-mask::${FRONTEND_PROJECT_TOKEN}"
+        #   echo "Frontend token created"
+          echo "Frontend project token is generated successfully"
+        else
+          echo "Frontend project token is not genereated, check code...."
+          sleep 5s
+          exit 1;
+        fi
         #adding backend project token into gitnub env so that i can use this inside next steps backend scan and frontend scan, can't access outside this job (analysis_code)
         echo "FRONTEND_PROJECT_TOKEN=${FRONTEND_PROJECT_TOKEN}" >> $GITHUB_ENV
     else

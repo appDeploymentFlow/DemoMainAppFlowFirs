@@ -1,4 +1,9 @@
+#verify any tab used in yaml file with command "cat -A your-workflow.yml"->if show ^I then tab used
 name: make deployment to expense app using docker containers
+#below permissions block is used to join worker01 as runner
+permissions:
+  actions: write
+  contents: read
 on:
   push:
     branches: ["main"]
@@ -30,19 +35,19 @@ jobs:
           TF_VAR_user_git: ${{ secrets.REPO_USER_NAME }}
           TF_VAR_ssh_pass: ${{ secrets.WORKER01_SSH_PASS }}
           TF_VAR_ansible_role: "docker"
-        # run: |
-        #   cd app/terraform_code
-        #   terraform init
-        #   terraform plan
-        #   terraform apply -auto-approve
-        run: echo 'infra is already created'
+        run: |
+          cd app/terraform_code
+          terraform init
+          terraform plan
+          terraform apply -auto-approve
+        # run: echo 'infra is already created'
   wait_time:
     runs-on: ['workStation01']
     needs: ['create_infra']
     steps:
       - name: wait 2min till server is not setup
-        # run: sleep 120s
-        run: sleep 1s
+        run: sleep 120s
+        # run: sleep 1s
         shell: bash
   # configure_packages:
   #   runs-on: ['workStation01']
@@ -72,38 +77,38 @@ jobs:
         env:
           ACCESS_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
           SSH_PASS: ${{ secrets.WORKER01_SSH_PASS }}
-        # run: bash app/scripts/githubRunner/runnerJoin.sh "$ACCESS_TOKEN" "$SSH_PASS"
-        run: echo 'worker01 is joined as self hosted runner'
+        run: bash app/scripts/githubRunner/runnerJoin.sh "$ACCESS_TOKEN" "$SSH_PASS"
+        # run: echo 'worker01 is joined as self hosted runner'
   get_worker01_public_ip:
     runs-on: ['worker01']
     needs: ['join_worker01_as_runner']
     outputs:
       public_ip: ${{ steps.get-ip.outputs.ip }}
-      my_age: ${{ steps.get-ip.outputs.age }}       #for test
+      # my_age: ${{ steps.get-ip.outputs.age }}       #for test
     steps:
       - id: get-ip
         run: |
           IP=$(curl -s ifconfig.me)
           echo "ip=${IP}" >> $GITHUB_OUTPUT
-          echo "age=36" >> $GITHUB_OUTPUT
-      - name: access worker01 ip inside same job      #for test
-        run: |
-          echo "Worker01 public ip using steps.get-ip.outputs.ip is: ${{ steps.get-ip.outputs.ip }}"
+          # echo "age=36" >> $GITHUB_OUTPUT
+      # - name: access worker01 ip inside same job      #for test
+      #   run: |
+      #     echo "Worker01 public ip using steps.get-ip.outputs.ip is: ${{ steps.get-ip.outputs.ip }}"
   create_sonarqube_environment:
     runs-on: ['worker01']
     needs: ['get_worker01_public_ip']
     env:
       WORKER01_PUBLIC_IP: ${{ needs.get_worker01_public_ip.outputs.public_ip }}
-      MY_AGE: ${{ needs.get_worker01_public_ip.outputs.my_age }}
+      # MY_AGE: ${{ needs.get_worker01_public_ip.outputs.my_age }}
     steps:
       - name: checkout scm of git
         uses: actions/checkout@v5
-      - name: get age
-        run: |
-          echo "My age is : ${{ env.MY_AGE }}"
+      # - name: get age
+      #   run: |
+      #     echo "My age is : ${{ env.MY_AGE }}"
       - name: sonarqube container creation
         run: |
-          # sudo docker network create --subnet 192.168.200.0/24 --driver bridge expense-network01
+          sudo docker network create --subnet 192.168.200.0/24 --driver bridge expense-network01
           bash app/scripts/sonarqube/sonarqubeInstall.sh
         # run: echo 'sonarqube is running'
   analysis_code:
@@ -122,7 +127,7 @@ jobs:
         run: bash app/scripts/sonar_scanner/backendScan.sh
       - name: upload backed scan log
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: backend-sonar-scanner-log
           path: app/scripts/sonar_scanner/backendScan.log
@@ -130,40 +135,42 @@ jobs:
         run: bash app/scripts/sonar_scanner/frontendScan.sh
       - name: upload frontend scan log
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: frontend-sonar-scanner-log
           path: app/scripts/sonar_scanner/frontendScan.log
-  # create_image:
-  #   runs-on: ['worker01']
-  #   needs: ['analysis_code', 'get_worker01_public_ip']
-  #   env:
-  #     WORKER01_PUBLIC_IP: ${{ needs.get_worker01_public_ip.outputs.public_ip }}
-  #   steps:
-  #     - name: checkout scm of git
-  #       uses: actions/checkout@v5
-  #     - name: debug ip of worker
-  #       run: echo "$WORKER01_PUBLIC_IP"
-  #     - name: create db image
-  #       run: sudo docker build --network=host -t db:01 -f app/docker/db/Dockerfile .
-  #     - name: create backend image
-  #       run: sudo docker build --network=host -t backend:01 -f app/docker/backend/Dockerfile .
-  #     - name: modified proxy.conf file with server's public ip
-  #       run: sed -i "s/^[[:space:]]*server_name .*/    server_name ${WORKER01_PUBLIC_IP};/" app/docker/frontend/proxy.conf
-  #     - name: create frontend image
-  #       run: sudo docker build -t frontend:01 -f app/docker/frontend/Dockerfile .
+  create_image:
+    runs-on: ['worker01']
+    needs: ['analysis_code', 'get_worker01_public_ip']
+    env:
+      WORKER01_PUBLIC_IP: ${{ needs.get_worker01_public_ip.outputs.public_ip }}
+    steps:
+      - name: checkout scm of git
+        uses: actions/checkout@v5
+      - name: debug ip of worker
+        run: echo "$WORKER01_PUBLIC_IP"
+      - name: create db image
+        run: sudo docker build --network=host -t db:01 -f app/docker/db/Dockerfile .
+      - name: create backend image
+        run: sudo docker build --network=host -t backend:01 -f app/docker/backend/Dockerfile .
+      - name: modified proxy.conf file with server's public ip
+        run: sed -i "s/^[[:space:]]*server_name .*/    server_name ${WORKER01_PUBLIC_IP};/" app/docker/frontend/proxy.conf
+      - name: create frontend image
+        run: sudo docker build -t frontend:01 -f app/docker/frontend/Dockerfile .
   create_expense_container:
     runs-on: ['worker01']
-    # needs: ['create_image']
-    needs: ['analysis_code']
+    needs: ['create_image']
     steps:
       - name: checkout scm of git
         uses: actions/checkout@v5
       - name: create db container
-        run: sudo docker run -itd --name db --ip 192.168.200.10 --network expense-network01 -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root db:01
+        run: |
+          sudo docker run -itd --name db --ip 192.168.200.10 --network expense-network01 -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root db:01
+          sleep 10s
       - name: create backend container
         run: |
           sudo docker run -itd --name backend --ip 192.168.200.11 --network expense-network01 -p 8080:8080 backend:01 /bin/bash
+          sudo docker exec backend ping -c 3 db
           sudo docker exec backend /bin/bash -c "DB_HOST=db node /app/index.js"
       - name: create frontend container
         run: |
