@@ -100,7 +100,7 @@ jobs:
       - name: checkout scm of git
         uses: actions/checkout@v5
       - name: access age varaible from other job    #for test
-        run: echo "My age is : $MY_AGE"
+        run: echo "My age is : ${{ env.MY_AGE }}"
       - name: sonarqube container creation
         run: |
           sudo docker network create --subnet 192.168.200.0/24 --driver bridge expense-network01
