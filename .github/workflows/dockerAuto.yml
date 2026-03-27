@@ -30,19 +30,19 @@ jobs:
           TF_VAR_user_git: ${{ secrets.REPO_USER_NAME }}
           TF_VAR_ssh_pass: ${{ secrets.WORKER01_SSH_PASS }}
           TF_VAR_ansible_role: "docker"
-        # run: |
-        #   cd app/terraform_code
-        #   terraform init
-        #   terraform plan
-        #   terraform apply -auto-approve
-        run: echo 'infra is already created'
+        run: |
+          cd app/terraform_code
+          terraform init
+          terraform plan
+          terraform apply -auto-approve
+        # run: echo 'infra is already created'
   wait_time:
     runs-on: ['workStation01']
     needs: ['create_infra']
     steps:
-      - name: wait till server is not setup 6min
-        # run: sleep 120s
-        run: sleep 5s
+      - name: wait 2min till server is not setup
+        run: sleep 120s
+        # run: sleep 5s
         shell: bash
   # configure_packages:
   #   runs-on: ['workStation01']
@@ -72,31 +72,40 @@ jobs:
         env:
           ACCESS_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
           SSH_PASS: ${{ secrets.WORKER01_SSH_PASS }}
-        # run: bash app/scripts/githubRunner/runnerJoin.sh "$ACCESS_TOKEN" "$SSH_PASS"
-        run: echo 'worker01 is joined as self hosted runner'
+        run: bash app/scripts/githubRunner/runnerJoin.sh "$ACCESS_TOKEN" "$SSH_PASS"
+        # run: echo 'worker01 is joined as self hosted runner'
   get_worker01_public_ip:
     runs-on: ['worker01']
     needs: ['join_worker01_as_runner']
     outputs:
       public_ip: ${{ steps.get-ip.outputs.ip }}
+      my_age: ${{ steps.get-ip.outputs.age }}       #for test
     steps:
       - id: get-ip
         run: |
           IP=$(curl -s ifconfig.me)
           echo "ip=${IP}" >> $GITHUB_OUTPUT
+          echo "age=36" >> $GITHUB_OUTPUT
+      - name: access worker01 ip inside same job      #for test
+        run: |
+          echo "Worker01 public ip using outputs.public_ip is: ${{ outputs.public_ip }}"
+          echo "Worker01 public ip using steps.get-ip.outputs.ip is: ${{ steps.get-ip.outputs.ip }}"
   create_sonarqube_environment:
     runs-on: ['worker01']
     needs: ['get_worker01_public_ip']
     env:
       WORKER01_PUBLIC_IP: ${{ needs.get_worker01_public_ip.outputs.public_ip }}
+      MY_AGE: ${{ needs.get_worker01_public_ip.outputs.my_age }}
     steps:
       - name: checkout scm of git
         uses: actions/checkout@v5
+      - name: access age varaible from other job    #for test
+        run: echo "My age is : ${{ MY_AGE }}"
       - name: sonarqube container creation
-        # run: |
-        #   sudo docker network create --subnet 192.168.200.0/24 --driver bridge expense-network01
-        #   bash app/scripts/sonarqube/sonarqubeInstall.sh
-        run: echo 'sonarqube is running'
+        run: |
+          sudo docker network create --subnet 192.168.200.0/24 --driver bridge expense-network01
+          bash app/scripts/sonarqube/sonarqubeInstall.sh
+        # run: echo 'sonarqube is running'
   analysis_code:
     runs-on: ['worker01']
     needs: ['create_sonarqube_environment', 'get_worker01_public_ip']
@@ -152,7 +161,9 @@ jobs:
       - name: create db container
         run: sudo docker run -itd --name db --ip 192.168.200.10 --network expense-network01 -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root db:01
       - name: create backend container
-        run: sudo docker run -itd --name backend --ip 192.168.200.11 --network expense-network01 -p 8080:8080 backend:01 /bin/bash
+        run: |
+          sudo docker run -itd --name backend --ip 192.168.200.11 --network expense-network01 -p 8080:8080 backend:01 /bin/bash
+          sudo docker exec backend DB_HOST=db node /app/index.js
       - name: create frontend container
         run: |
           sudo docker run -itd --name frontend --ip 192.168.200.12 --network expense-network01 -p 80:80 frontend:01 /bin/bash
