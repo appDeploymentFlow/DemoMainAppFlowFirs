@@ -1,9 +1,9 @@
 #verify any tab used in yaml file with command "cat -A your-workflow.yml"->if show ^I then tab used
 name: make deployment to expense app using docker containers
 #below permissions block is used to join worker01 as runner
-permissions:
-  actions: write
-  contents: read
+# permissions:
+#   actions: write
+#   contents: read
 on:
   push:
     branches: ["main"]
