@@ -30,19 +30,19 @@ jobs:
           TF_VAR_user_git: ${{ secrets.REPO_USER_NAME }}
           TF_VAR_ssh_pass: ${{ secrets.WORKER01_SSH_PASS }}
           TF_VAR_ansible_role: "docker"
-        run: |
-          cd app/terraform_code
-          terraform init
-          terraform plan
-          terraform apply -auto-approve
-        # run: echo 'infra is already created'
+        # run: |
+        #   cd app/terraform_code
+        #   terraform init
+        #   terraform plan
+        #   terraform apply -auto-approve
+        run: echo 'infra is already created'
   wait_time:
     runs-on: ['workStation01']
     needs: ['create_infra']
     steps:
       - name: wait 2min till server is not setup
-        run: sleep 120s
-        # run: sleep 5s
+        # run: sleep 120s
+        run: sleep 1s
         shell: bash
   # configure_packages:
   #   runs-on: ['workStation01']
@@ -72,8 +72,8 @@ jobs:
         env:
           ACCESS_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
           SSH_PASS: ${{ secrets.WORKER01_SSH_PASS }}
-        run: bash app/scripts/githubRunner/runnerJoin.sh "$ACCESS_TOKEN" "$SSH_PASS"
-        # run: echo 'worker01 is joined as self hosted runner'
+        # run: bash app/scripts/githubRunner/runnerJoin.sh "$ACCESS_TOKEN" "$SSH_PASS"
+        run: echo 'worker01 is joined as self hosted runner'
   get_worker01_public_ip:
     runs-on: ['worker01']
     needs: ['join_worker01_as_runner']
@@ -103,7 +103,7 @@ jobs:
           echo "My age is : ${{ env.MY_AGE }}"
       - name: sonarqube container creation
         run: |
-          sudo docker network create --subnet 192.168.200.0/24 --driver bridge expense-network01
+          # sudo docker network create --subnet 192.168.200.0/24 --driver bridge expense-network01
           bash app/scripts/sonarqube/sonarqubeInstall.sh
         # run: echo 'sonarqube is running'
   analysis_code:
@@ -134,27 +134,28 @@ jobs:
         with:
           name: frontend-sonar-scanner-log
           path: app/scripts/sonar_scanner/frontendScan.log
-  create_image:
-    runs-on: ['worker01']
-    needs: ['analysis_code', 'get_worker01_public_ip']
-    env:
-      WORKER01_PUBLIC_IP: ${{ needs.get_worker01_public_ip.outputs.public_ip }}
-    steps:
-      - name: checkout scm of git
-        uses: actions/checkout@v5
-      - name: debug ip of worker
-        run: echo "$WORKER01_PUBLIC_IP"
-      - name: create db image
-        run: sudo docker build --network=host -t db:01 -f app/docker/db/Dockerfile .
-      - name: create backend image
-        run: sudo docker build --network=host -t backend:01 -f app/docker/backend/Dockerfile .
-      - name: modified proxy.conf file with server's public ip
-        run: sed -i "s/^[[:space:]]*server_name .*/    server_name ${WORKER01_PUBLIC_IP};/" app/docker/frontend/proxy.conf
-      - name: create frontend image
-        run: sudo docker build -t frontend:01 -f app/docker/frontend/Dockerfile .
+  # create_image:
+  #   runs-on: ['worker01']
+  #   needs: ['analysis_code', 'get_worker01_public_ip']
+  #   env:
+  #     WORKER01_PUBLIC_IP: ${{ needs.get_worker01_public_ip.outputs.public_ip }}
+  #   steps:
+  #     - name: checkout scm of git
+  #       uses: actions/checkout@v5
+  #     - name: debug ip of worker
+  #       run: echo "$WORKER01_PUBLIC_IP"
+  #     - name: create db image
+  #       run: sudo docker build --network=host -t db:01 -f app/docker/db/Dockerfile .
+  #     - name: create backend image
+  #       run: sudo docker build --network=host -t backend:01 -f app/docker/backend/Dockerfile .
+  #     - name: modified proxy.conf file with server's public ip
+  #       run: sed -i "s/^[[:space:]]*server_name .*/    server_name ${WORKER01_PUBLIC_IP};/" app/docker/frontend/proxy.conf
+  #     - name: create frontend image
+  #       run: sudo docker build -t frontend:01 -f app/docker/frontend/Dockerfile .
   create_expense_container:
     runs-on: ['worker01']
-    needs: ['create_image']
+    # needs: ['create_image']
+    needs: ['analysis_code']
     steps:
       - name: checkout scm of git
         uses: actions/checkout@v5
@@ -163,7 +164,7 @@ jobs:
       - name: create backend container
         run: |
           sudo docker run -itd --name backend --ip 192.168.200.11 --network expense-network01 -p 8080:8080 backend:01 /bin/bash
-          sudo docker exec backend DB_HOST=db node /app/index.js
+          sudo docker exec backend /bin/bash -c "DB_HOST=db node /app/index.js"
       - name: create frontend container
         run: |
           sudo docker run -itd --name frontend --ip 192.168.200.12 --network expense-network01 -p 80:80 frontend:01 /bin/bash

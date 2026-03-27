@@ -49,7 +49,9 @@ then
             "http://${WORKER01_PUBLIC_IP}:9000/api/projects/create?name=${backend_project_name}&project=${backend_project_key}"
         #Generate a token specifically for this project using sonarqube API
         BACKEND_PROJECT_TOKEN=$(curl -u admin:${1} -X POST \
-            "http://${WORKER01_PUBLIC_IP}:9000/api/user_tokens/generate?name=project-token&projectKey=${backend_project_key}" | jq -r .token)
+            "http://${WORKER01_PUBLIC_IP}:9000/api/user_tokens/generate?name=${backend_project_key}-token&projectKey=${backend_project_key}" | jq -r .token) \
+            | tee backend_token_response.json \
+            | jq -r '.token'
         echo "Backend Project token is : ${BACKEND_PROJECT_TOKEN}"
         #adding backend project token into gitnub env so that i can use this inside next steps backend scan and frontend scan, can't access outside this job (analysis_code)
         echo "BACKEND_PROJECT_TOKEN=${BACKEND_PROJECT_TOKEN}" >> $GITHUB_ENV
@@ -69,7 +71,9 @@ then
             "http://${WORKER01_PUBLIC_IP}:9000/api/projects/create?name=${frontend_project_name}&project=${frontend_project_key}"
         #Generate a token specifically for this project using sonarqube API
         FRONTEND_PROJECT_TOKEN=$(curl -u admin:${1} -X POST \
-            "http://${WORKER01_PUBLIC_IP}:9000/api/user_tokens/generate?name=project-token&projectKey=${frontend_project_key}" | jq -r .token)
+            "http://${WORKER01_PUBLIC_IP}:9000/api/user_tokens/generate?name=${frontend_project_key}-token&projectKey=${frontend_project_key}" | jq -r .token) \
+            | tee frontend_token_response.json \
+            | jq -r '.token'
         echo "Frontend Project token is : ${FRONTEND_PROJECT_TOKEN}"
         #adding backend project token into gitnub env so that i can use this inside next steps backend scan and frontend scan, can't access outside this job (analysis_code)
         echo "FRONTEND_PROJECT_TOKEN=${FRONTEND_PROJECT_TOKEN}" >> $GITHUB_ENV
