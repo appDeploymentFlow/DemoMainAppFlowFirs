@@ -1,6 +1,6 @@
 FROM ubuntu
 RUN << EOF
-apt update && apt install nodejs curl unzip npm vim mysql-client-8.0 wget -y
+apt update && apt install nodejs curl unzip npm iputils-ping vim mysql-client-8.0 wget -y
 useradd expense
 EOF
 WORKDIR /app
