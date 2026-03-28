@@ -150,9 +150,9 @@ jobs:
       - name: debug ip of worker
         run: echo "$WORKER01_PUBLIC_IP"
       - name: create db image
-        run: sudo docker build --network=host -t db:01 -f app/docker/db/Dockerfile .
+        run: sudo docker build -t db:01 -f app/docker/db/Dockerfile .
       - name: create backend image
-        run: sudo docker build --network=host -t backend:01 -f app/docker/backend/Dockerfile .
+        run: sudo docker build -t backend:01 -f app/docker/backend/Dockerfile .
       - name: modified proxy.conf file with server's public ip
         run: |
           sed -i "s/^[[:space:]]*server_name .*/    server_name ${WORKER01_PUBLIC_IP};/" app/docker/frontend/proxy.conf
@@ -170,7 +170,7 @@ jobs:
           sudo docker run -d --name db --ip 192.168.200.10 --network expense-network01 -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root db:01
       - name: create backend container
         run: |
-          sudo docker run -d --name backend --ip 192.168.200.11 --network expense-network01 -e DB_HOST=db -p 8080:8080 backend:01
+          sudo docker run -d --name backend --ip 192.168.200.11 --network expense-network01 -p 8080:8080 backend:01
           # sudo docker run -d --name backend --ip 192.168.200.11 --network expense-network01 -e DB_HOST=db -p 8080:8080 backend:01 node /app/index.js
           sudo docker exec -d backend ping -c 3 db
       - name: create frontend container
