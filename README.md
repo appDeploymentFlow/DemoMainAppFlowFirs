@@ -14,7 +14,7 @@
 - ☁ AWS | Terraform | Kubernetes | Ansible | Docker | Sonarqube
 - 🐧 Linux Administrator
 - ⚡ Automation using Python
-- 👀 Promethesu | Graffana | ELK 
+- 👀 Promethesu | Grafana | ELK 
 
 ---
 
@@ -22,9 +22,12 @@
 
 <p align="center">
 
-<img src="https://skillicons.dev/icons?i=aws,terraform,docker,kubernetes,linux,git,github,ansible,sonarqube,shell-script,prometheus,graffana,ELK,python,vscode"/>
+<img src="https://skillicons.dev/icons?i=aws,linux,bash,git,github,githubactions,jenkins,terraform,ansible,SonarQube,docker,kubernetes,prometheus,grafana,elasticsearch,logstash,kibana,python,vscode"/>
 
 </p>
+[![Quality gate](http://98.81.156.216:9000/api/project_badges/quality_gate?project=expense_backend_01&token=sqb_e00f4bc85debe765b346bfe6b4ea666219841dbd)](http://98.81.156.216:9000/dashboard?id=expense_backend_01)
+
+![SonarQube](https://shields.io)
 
 ---
 
