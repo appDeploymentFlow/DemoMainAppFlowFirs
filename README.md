@@ -22,7 +22,8 @@
 
 <p align="center">
 
-<img src="https://skillicons.dev/icons?i=aws,linux,bash,git,github,githubactions,jenkins,terraform,ansible,docker,kubernetes,prometheus,grafana,elasticsearch,logstash,kibana,python,vscode"/>
+<img src="https://skillicons.dev/icons?i=aws,linux,bash,git,github,githubactions,jenkins,terraform,ansible,docker,kubernetes,prometheus,grafana,python,vscode"/>
+<!-- <img src="https://skillicons.dev/icons?i=aws,linux,bash,git,github,githubactions,jenkins,terraform,ansible,docker,kubernetes,prometheus,grafana,elasticsearch,logstash,kibana,python,vscode"/> -->
 <!-- <img src="images/kibana.png" />
 <img src="images/logstash.png" />
 <img src="images/sonarQuality.png" /> -->
