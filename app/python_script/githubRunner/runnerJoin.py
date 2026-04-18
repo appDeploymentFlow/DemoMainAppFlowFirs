@@ -26,9 +26,9 @@ def make_directory():
     os.chdir(WORKING_PATH)
     
 def log(message):
-    timestamps=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    timestamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     with open(LOG_FILE, "a") as f:
-        f.write(f"{timestamps} {message}\n")
+        f.write(f"{timestamp} {message}\n")
 
 
 def get_ec2_connection(region):
@@ -44,12 +44,12 @@ def get_ec2_connection(region):
             print("aws authentication key and secret required...")
             log(f"❌ERROR: aws authentication key and secret required are not provided..\n")
             raise ValueError("aws authentication key and secret required are not provided..")
-        ec2=boto3.client('ec2', region_name=region, aws_access_key_id={auth_value.awsKey}, aws_secret_access_key={auth_value.awsSecret})
-        log("CONNECTION: stablished with ec2 ✅")
+        ec2=boto3.client('ec2', region_name=region, aws_access_key_id=auth_value.awsKey, aws_secret_access_key=auth_value.awsSecret)
+        log("CONNECTION: established with ec2 ✅")
         print("ec2 connection established..")
         return ec2
     except ClientError as e:
-        log(f"❌EXCEPTION: occured duing stablishing connectio with ec2 {e}\n")
+        log(f"❌EXCEPTION: occurred during establishing connection with ec2 {e}\n")
         print(e)
         return False
 
@@ -60,7 +60,7 @@ def get_public_ip(instance_name, region):
         ec2=get_ec2_connection(region)
         if not ec2:
             print("EC2 connection is not established...")
-            log(f"❌ERROR: connection with AWS's EC2 is not estalished..\n")
+            log(f"❌ERROR: connection with AWS's EC2 is not established..\n")
             raise ValueError("Couldn't make connection with AWS's EC2..")
         # reservations=ec2.describe_instances(Filters=[{'Name':'tag:Name', 'Values':['workStation01']}])
         reservations=ec2.describe_instances(Filters=[{'Name':'tag:Name', 'Values':[instance_name]}])
