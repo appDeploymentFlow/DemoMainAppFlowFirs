@@ -89,7 +89,7 @@ This project creates:
 
 ## 🏗 Architecture
 
-![architecture](architecture.png)
+![architecture](images/architecture.png)
 
 ---
 
