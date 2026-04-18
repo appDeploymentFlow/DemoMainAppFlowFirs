@@ -22,12 +22,15 @@
 
 <p align="center">
 
-<img src="https://skillicons.dev/icons?i=aws,linux,bash,git,github,githubactions,jenkins,terraform,ansible,SonarQube,docker,kubernetes,prometheus,grafana,elasticsearch,logstash,kibana,python,vscode"/>
-
-</p>
-[![Quality gate](http://98.81.156.216:9000/api/project_badges/quality_gate?project=expense_backend_01&token=sqb_e00f4bc85debe765b346bfe6b4ea666219841dbd)](http://98.81.156.216:9000/dashboard?id=expense_backend_01)
+<img src="https://skillicons.dev/icons?i=aws,linux,bash,git,github,githubactions,jenkins,terraform,ansible,docker,kubernetes,prometheus,grafana,elasticsearch,logstash,kibana,python,vscode"/>
+<img src="images/kibana.png" />
+<img src="images/logstash.png" />
+<img src="images/sonarQuality.png" />
 
 ![SonarQube](https://shields.io)
+<img src="https://skillicons.dev/icons?i=aws,terraform,docker,kubernetes,linux,git,github,ansible,sonarqube,shell-script,prometheus,graffana,ELK,python,vscode"/>
+
+</p>
 
 ---
 
@@ -53,7 +56,7 @@
 
 ---
 
-# 🚀 DevOps Project — Kubernetes AWS Setup
+# 🚀 DevOps Project — Web application deployment
 
 ---
 
@@ -118,7 +121,18 @@ project/
 ```
 
 ---
+## 👍 Project Result
 
+[![.github/workflows/dockerAuto.yml](https://github.com/appDeploymentFlow/DemoMainAppFlowFirs/actions/workflows/dockerAuto.yml/badge.svg)](https://github.com/appDeploymentFlow/DemoMainAppFlowFirs/actions/workflows/dockerAuto.yml)
+<img src="images/jobsStatus.png" />
+<img src="images/instances.png" />
+<img src="images/runner.png" />
+<img src="images/containers.png" />
+<img src="images/sonarqube.png" />
+<img src="images/sonarQuality.png" />
+<img src="images/webAppView.png" />
+
+---
 ## 🤝 Connect With Me
 
 LinkedIn:
