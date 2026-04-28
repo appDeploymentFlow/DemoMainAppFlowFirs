@@ -1,0 +1,23 @@
+# Default owner
+* @vikaskumars1997
+
+# Frontend React
+app/frontend/ @frontend-team
+
+# Backend Node.js
+app/backend/ @backend-team
+
+# Infra
+app/terraform_code @devops-team
+app/scripts @devops-team
+app/python_script @devops-team
+
+# Kubernetes configs
+app/k8s/ @devops-team
+
+# Docker files
+Dockerfile @devops-team
+docker-compose.yml @devops-team
+
+# GitHub workflows
+/.github/workflows/ @devops-team @vikaskumars1997
